@@ -27,6 +27,8 @@ export const localSpaceUser = (name?: string): SpaceUserExtended => {
         jitsiParticipantId: undefined,
         characterTextures: [],
         attendeesState: false,
+        avatarMode: 1,
+        maskImageUrl: undefined,
         pictureStore: readable<string | undefined>(undefined, (set) => {
             const unsubscribe = gameManager
                 .getCurrentGameScene()
@@ -65,6 +67,8 @@ export const localSpaceUser = (name?: string): SpaceUserExtended => {
             jitsiParticipantId: writable(undefined),
             uuid: writable(localUserStore.getLocalUser()?.uuid ?? ""),
             chatID: writable(localUserStore.getChatId() ?? undefined),
+            avatarMode: writable(1),
+            maskImageUrl: writable(undefined),
         },
     };
 };

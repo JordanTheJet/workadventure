@@ -194,6 +194,16 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "تعذر الوصول إلى مكتبك الشخصي",
         errorUnclaiming: "تعذر تحرير مكتبك الشخصي",
     },
+    avatarMode: {
+        switchToMask: "التبديل إلى القناع",
+        enableCamera: "تفعيل صورة الكاميرا",
+        videoDescription: "عرض بث كاميرا الويب كصورة رمزية",
+        maskDescription: "عرض صورة قناع ثابتة كصورة رمزية",
+        selectMask: "اختيار القناع",
+        uploadCustomMask: "تحميل قناع مخصص",
+        presetMasks: "أقنعة محددة مسبقاً",
+        customMask: "قناع مخصص",
+    },
 };
 
 export default actionbar;

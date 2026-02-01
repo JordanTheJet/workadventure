@@ -194,6 +194,16 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "Ihr persönlicher Schreibtisch konnte nicht erreicht werden",
         errorUnclaiming: "Ihr persönlicher Schreibtisch konnte nicht freigegeben werden",
     },
+    avatarMode: {
+        switchToMask: "Zu Maske wechseln",
+        enableCamera: "Kamera-Avatar aktivieren",
+        videoDescription: "Zeigen Sie Ihren Webcam-Feed als Avatar an",
+        maskDescription: "Zeigen Sie ein statisches Maskenbild als Avatar an",
+        selectMask: "Maske auswählen",
+        uploadCustomMask: "Eigene Maske hochladen",
+        presetMasks: "Vorgefertigte Masken",
+        customMask: "Eigene Maske",
+    },
 };
 
 export default actionbar;

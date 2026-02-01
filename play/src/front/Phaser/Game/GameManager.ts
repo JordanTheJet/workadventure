@@ -28,6 +28,7 @@ import { InvalidLoginTokenError, MatrixClientWrapper } from "../../Chat/Connecti
 import { MatrixChatConnection } from "../../Chat/Connection/Matrix/MatrixChatConnection";
 import { VoidChatConnection } from "../../Chat/Connection/VoidChatConnection";
 import { loginTokenErrorStore, isMatrixChatEnabledStore } from "../../Stores/ChatStore";
+import { avatarModeStore } from "../../Stores/AvatarModeStore";
 import { initializeChatVisibilitySubscription } from "../../Chat/Stores/ChatStore";
 import { ABSOLUTE_PUSHER_URL } from "../../Enum/ComputedConst";
 import type { WokaData } from "../../Components/Woka/WokaTypes";
@@ -104,8 +105,19 @@ export class GameManager {
             }
         }
 
-        // Handle woka texture based on provideDefaultWokaTexture setting
-        if (!this.characterTextureIds || this.characterTextureIds.length === 0) {
+        // Video avatar mode: always skip character selection and use a default texture
+        // The actual avatar will be rendered from webcam/mask, not the Woka texture
+        const currentAvatarMode = get(avatarModeStore);
+        if (currentAvatarMode === "video" || currentAvatarMode === "mask") {
+            // Use a minimal default texture - the video/mask will be displayed instead
+            if (!this.characterTextureIds || this.characterTextureIds.length === 0) {
+                this.characterTextureIds = ["color_22", "eyes_23"];
+                localUserStore.setCharacterTextures(this.characterTextureIds);
+            }
+            // Always skip to game scene in video/mask mode
+            nextScene = "gameScene";
+        } else if (!this.characterTextureIds || this.characterTextureIds.length === 0) {
+            // Handle woka texture based on provideDefaultWokaTexture setting
             if (this.startRoom.provideDefaultWokaTexture === "random") {
                 const wokaData = await this.loadWokaData();
                 const randomIndexCollections = Math.floor(Math.random() * wokaData.woka.collections.length);
@@ -287,14 +299,27 @@ export class GameManager {
             this.scenePlugin.start(this.currentGameSceneName);
             menuIconVisiblilityStore.set(true);
         } else {
+            // In video/mask avatar mode, skip character selection entirely
+            const currentAvatarMode = get(avatarModeStore);
+            const useVideoAvatar = currentAvatarMode === "video" || currentAvatarMode === "mask";
+
             // If we are currently in the LoginScene and if we don't have a character selected, we go to SelectCharacterScene
+            // UNLESS we're in video/mask avatar mode
             if (
                 currentSceneName === LoginSceneName &&
-                (!this.characterTextureIds || this.characterTextureIds.length === 0)
+                (!this.characterTextureIds || this.characterTextureIds.length === 0) &&
+                !useVideoAvatar
             ) {
                 this.scenePlugin.run(SelectCharacterSceneName);
                 return;
             }
+
+            // In video/mask mode, set default textures if needed
+            if (useVideoAvatar && (!this.characterTextureIds || this.characterTextureIds.length === 0)) {
+                this.characterTextureIds = ["color_22", "eyes_23"];
+                localUserStore.setCharacterTextures(this.characterTextureIds);
+            }
+
             if (
                 (currentSceneName === SelectCompanionSceneName ||
                     currentSceneName === LoginSceneName ||

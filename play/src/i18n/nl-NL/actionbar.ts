@@ -194,6 +194,16 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "Kan uw persoonlijke bureau niet bereiken",
         errorUnclaiming: "Kan uw persoonlijke bureau niet vrijgeven",
     },
+    avatarMode: {
+        switchToMask: "Overschakelen naar masker",
+        enableCamera: "Camera-avatar inschakelen",
+        videoDescription: "Toon je webcamfeed als avatar",
+        maskDescription: "Toon een statisch maskerbeeld als avatar",
+        selectMask: "Masker selecteren",
+        uploadCustomMask: "Aangepast masker uploaden",
+        presetMasks: "Vooringestelde maskers",
+        customMask: "Aangepast masker",
+    },
 };
 
 export default actionbar;

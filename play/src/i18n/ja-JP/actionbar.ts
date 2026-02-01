@@ -194,6 +194,16 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "個人デスクに到達できません",
         errorUnclaiming: "個人デスクを解放できません",
     },
+    avatarMode: {
+        switchToMask: "マスクに切り替え",
+        enableCamera: "カメラアバターを有効化",
+        videoDescription: "ウェブカメラのフィードをアバターとして表示",
+        maskDescription: "静的なマスク画像をアバターとして表示",
+        selectMask: "マスクを選択",
+        uploadCustomMask: "カスタムマスクをアップロード",
+        presetMasks: "プリセットマスク",
+        customMask: "カスタムマスク",
+    },
 };
 
 export default actionbar;

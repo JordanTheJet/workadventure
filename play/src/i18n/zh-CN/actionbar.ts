@@ -194,6 +194,16 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "无法到达您的个人办公桌",
         errorUnclaiming: "无法释放您的个人办公桌",
     },
+    avatarMode: {
+        switchToMask: "切换到面具",
+        enableCamera: "启用摄像头头像",
+        videoDescription: "将网络摄像头画面显示为头像",
+        maskDescription: "将静态面具图像显示为头像",
+        selectMask: "选择面具",
+        uploadCustomMask: "上传自定义面具",
+        presetMasks: "预设面具",
+        customMask: "自定义面具",
+    },
 };
 
 export default actionbar;

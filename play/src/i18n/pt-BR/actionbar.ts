@@ -198,6 +198,16 @@ const actionbar: BaseTranslation = {
         errorMoving: "Não foi possível chegar à sua mesa pessoal",
         errorUnclaiming: "Não foi possível liberar sua mesa pessoal",
     },
+    avatarMode: {
+        switchToMask: "Mudar para máscara",
+        enableCamera: "Ativar avatar de câmera",
+        videoDescription: "Mostrar o feed da webcam como avatar",
+        maskDescription: "Mostrar uma imagem de máscara estática como avatar",
+        selectMask: "Selecionar máscara",
+        uploadCustomMask: "Carregar máscara personalizada",
+        presetMasks: "Máscaras predefinidas",
+        customMask: "Máscara personalizada",
+    },
 };
 
 export default actionbar;

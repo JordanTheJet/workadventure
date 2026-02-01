@@ -18,6 +18,7 @@ import chat from "../../Components/images/chat.png";
 import { userIsConnected } from "../../Stores/MenuStore";
 import RequiresLoginForChatModal from "../../Chat/Components/RequiresLoginForChatModal.svelte";
 import { analyticsClient } from "../../Administration/AnalyticsClient";
+import type { AvatarMode as AvatarModeType } from "../../Stores/AvatarModeStore";
 import { IconCamera } from "@wa-icons";
 
 export enum RemotePlayerEvent {
@@ -33,6 +34,8 @@ export class RemotePlayer extends Character implements ActivatableInterface {
     public readonly activationRadius: number;
 
     private visitCardUrl: string | null;
+    private remoteAvatarMode: AvatarModeType = "mask";
+    private remoteMaskImageUrl: string | null = null;
 
     constructor(
         userId: number,
@@ -48,7 +51,9 @@ export class RemotePlayer extends Character implements ActivatableInterface {
         companionTexturePromise: CancelablePromise<string>,
         activationRadius?: number,
         private chatID: string | undefined = undefined,
-        sayMessage?: SayMessage
+        sayMessage?: SayMessage,
+        avatarMode?: AvatarModeType,
+        maskImageUrl?: string | null
     ) {
         super(Scene, x, y, texturesPromise, name, direction, moving, 1, true, companionTexturePromise);
 
@@ -63,7 +68,53 @@ export class RemotePlayer extends Character implements ActivatableInterface {
             this.say(sayMessage.message, sayMessage.type);
         }
 
+        // Initialize video avatar for remote player
+        this.initializeRemoteVideoAvatar(Scene, userUuid);
+
+        // Set initial avatar mode
+        if (avatarMode) {
+            this.updateRemoteAvatarMode(avatarMode, maskImageUrl ?? null);
+        }
+
         this.bindEventHandlers();
+    }
+
+    /**
+     * Initialize video avatar renderer for this remote player
+     */
+    private initializeRemoteVideoAvatar(scene: GameScene, spaceUserId: string): void {
+        const videoAvatarManager = scene.getVideoAvatarManager();
+        if (videoAvatarManager) {
+            const renderer = videoAvatarManager.createRemoteRenderer(spaceUserId);
+            this.setVideoAvatarRenderer(renderer);
+        }
+    }
+
+    /**
+     * Update the remote player's avatar mode
+     */
+    public updateRemoteAvatarMode(mode: AvatarModeType, maskImageUrl: string | null): void {
+        this.remoteAvatarMode = mode;
+        this.remoteMaskImageUrl = maskImageUrl;
+
+        this.setAvatarMode(mode);
+
+        // Enable video avatar for both modes - the renderer handles video or mask display
+        this.enableVideoAvatar();
+
+        if (mode === "mask" && maskImageUrl) {
+            this.setMaskImage(maskImageUrl);
+        }
+    }
+
+    /**
+     * Set the remote video stream for this player
+     */
+    public setRemoteVideoStream(stream: MediaStream | undefined): void {
+        this.setVideoStream(stream);
+        if (stream && this.remoteAvatarMode === "video") {
+            this.enableVideoAvatar();
+        }
     }
 
     public updatePosition(position: PositionMessage): void {
@@ -112,6 +163,13 @@ export class RemotePlayer extends Character implements ActivatableInterface {
 
     public destroy(): void {
         wokaMenuStore.removeRemotePlayer(this.userUuid);
+
+        // Clean up video avatar renderer
+        const videoAvatarManager = this.scene.getVideoAvatarManager();
+        if (videoAvatarManager) {
+            videoAvatarManager.removeRenderer(this.userUuid);
+        }
+
         super.destroy();
     }
 

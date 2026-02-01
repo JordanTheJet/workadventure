@@ -30,6 +30,7 @@
     import CloseChatMenuItem from "./MenuIcons/CloseChatMenuItem.svelte";
     import SilentBlock from "./SilentBlock.svelte";
     import PictureInPictureMenuItem from "./MenuIcons/PictureInPictureMenuItem.svelte";
+    import AvatarModeSelector from "./AvatarModeSelector.svelte";
 
     let rightDiv: HTMLDivElement;
     let mediaSettingsDisplayed = false;
@@ -119,6 +120,10 @@
                             <CameraMenuItem />
                         {/if}
                         <!-- NAV : CAMERA END -->
+
+                        <!-- NAV : AVATAR MODE START -->
+                        <AvatarModeSelector />
+                        <!-- NAV : AVATAR MODE END -->
 
                         <!-- NAV : SCREENSHARING START -->
                         {#if $screenSharingAvailableStore}

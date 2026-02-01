@@ -195,5 +195,15 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "개인 책상에 도달할 수 없습니다",
         errorUnclaiming: "개인 책상을 해제할 수 없습니다",
     },
+    avatarMode: {
+        switchToMask: "마스크로 전환",
+        enableCamera: "카메라 아바타 활성화",
+        videoDescription: "웹캠 피드를 아바타로 표시",
+        maskDescription: "정적 마스크 이미지를 아바타로 표시",
+        selectMask: "마스크 선택",
+        uploadCustomMask: "사용자 정의 마스크 업로드",
+        presetMasks: "프리셋 마스크",
+        customMask: "사용자 정의 마스크",
+    },
 };
 export default actionbar;

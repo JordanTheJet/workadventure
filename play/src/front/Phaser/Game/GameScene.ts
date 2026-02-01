@@ -220,6 +220,7 @@ import { FollowManager } from "./FollowManager";
 import { LocateManager } from "./LocateManager";
 import { uiWebsiteManager } from "./UI/UIWebsiteManager";
 import { ScriptingVideoManager } from "./ScriptingVideoManager";
+import { VideoAvatarManager } from "./VideoAvatarManager";
 import EVENT_TYPE = Phaser.Scenes.Events;
 import Sprite = Phaser.GameObjects.Sprite;
 import CanvasTexture = Phaser.Textures.CanvasTexture;
@@ -338,6 +339,7 @@ export class GameScene extends DirtyScene {
 
     private proximitySpaceManager: ProximitySpaceManager | undefined;
     private scriptingVideoManager: ScriptingVideoManager | undefined;
+    private videoAvatarManager: VideoAvatarManager | undefined;
     private objectsByType = new Map<string, ITiledMapObject[]>();
     private embeddedWebsiteManager!: EmbeddedWebsiteManager;
     private areaManager!: DynamicAreaManager;
@@ -423,6 +425,10 @@ export class GameScene extends DirtyScene {
             throw new Error("BroadcastService not initialized yet.");
         }
         return this._broadcastService;
+    }
+
+    public getVideoAvatarManager(): VideoAvatarManager | undefined {
+        return this.videoAvatarManager;
     }
 
     //hook preload scene
@@ -777,6 +783,9 @@ export class GameScene extends DirtyScene {
             this.gameMapFrontWrapper.getCollisionGrid(),
             this.gameMapFrontWrapper.getTileDimensions()
         );
+
+        // Create video avatar manager for webcam-based character rendering
+        this.videoAvatarManager = new VideoAvatarManager(this);
 
         this.subscribeToGameMapChanged();
         this.subscribeToEntitiesManagerObservables();
@@ -1148,6 +1157,7 @@ export class GameScene extends DirtyScene {
         this.cameraManager?.destroy();
         this.mapEditorModeManager?.destroy();
         this.pathfindingManager?.cleanup();
+        this.videoAvatarManager?.destroy();
 
         this._broadcastService?.destroy().catch((e) => {
             console.error("Error while destroying broadcast service", e);
@@ -1269,6 +1279,9 @@ export class GameScene extends DirtyScene {
         if (this.mapEditorModeManager?.isActive()) {
             this.mapEditorModeManager.update(time, delta);
         }
+
+        // Update video avatar renderers
+        this.videoAvatarManager?.update(time);
 
         for (const addedPlayer of this.remotePlayersRepository.getAddedPlayers()) {
             debugAddPlayer("Player will be add to the GameScene", addedPlayer);

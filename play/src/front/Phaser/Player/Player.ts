@@ -12,6 +12,8 @@ import { followStateStore, followRoleStore, followUsersStore } from "../../Store
 import { WOKA_SPEED } from "../../Enum/EnvironmentVariable";
 import { visibilityStore } from "../../Stores/VisibilityStore";
 import { passStatusToOnline } from "../../Rules/StatusRules/statusChangerFunctions";
+import { avatarModeStore, maskImageStore } from "../../Stores/AvatarModeStore";
+import { localStreamStore, type LocalStreamStoreValue } from "../../Stores/MediaStore";
 
 export const hasMovedEventName = "hasMoved";
 export const requestEmoteEventName = "requestEmote";
@@ -23,6 +25,9 @@ export class Player extends Character {
     private followingPathPromiseResolve?: (result: { x: number; y: number; cancelled: boolean }) => void;
     private pathWalkingSpeed?: number;
     private readonly unsubscribeVisibilityStore: Unsubscriber;
+    private readonly unsubscribeAvatarModeStore: Unsubscriber;
+    private readonly unsubscribeMaskImageStore: Unsubscriber;
+    private readonly unsubscribeLocalStreamStore: Unsubscriber;
     //private readonly unsubscribeLayoutManagerActionStore: Unsubscriber;
 
     constructor(
@@ -46,12 +51,61 @@ export class Player extends Character {
             }
         });
 
+        // Set up video avatar support
+        this.initializeVideoAvatar(Scene);
+
+        // Subscribe to avatar mode changes
+        // Both video and mask modes use the VideoAvatarRenderer
+        this.unsubscribeAvatarModeStore = avatarModeStore.subscribe((mode) => {
+            this.setAvatarMode(mode);
+            // Enable video avatar for both modes - the renderer handles video or mask display
+            this.enableVideoAvatar();
+        });
+
+        // Subscribe to mask image changes
+        this.unsubscribeMaskImageStore = maskImageStore.subscribe((maskUrl) => {
+            if (maskUrl) {
+                this.setMaskImage(maskUrl);
+            }
+        });
+
+        // Subscribe to local video stream changes
+        this.unsubscribeLocalStreamStore = localStreamStore.subscribe((streamValue: LocalStreamStoreValue) => {
+            if (streamValue.type === "success" && streamValue.stream) {
+                const videoTracks = streamValue.stream.getVideoTracks();
+                if (videoTracks.length > 0) {
+                    this.setVideoStream(streamValue.stream);
+                } else {
+                    this.setVideoStream(undefined);
+                }
+            } else {
+                this.setVideoStream(undefined);
+            }
+        });
+
         /*this.unsubscribeLayoutManagerActionStore = layoutManagerActionStore.subscribe((actions) => {
             this.destroyAllText();
             actions.forEach((action) => {
                 this.playText(action.uuid, `${action.message}`, -1, action.callback, undefined, action.type);
             });
         });*/
+    }
+
+    /**
+     * Initialize video avatar renderer for the local player
+     */
+    private initializeVideoAvatar(scene: GameScene): void {
+        const videoAvatarManager = scene.getVideoAvatarManager();
+        if (videoAvatarManager) {
+            const renderer = videoAvatarManager.createLocalRenderer();
+            this.setVideoAvatarRenderer(renderer);
+
+            // Set initial mask image
+            const currentMask = get(maskImageStore);
+            if (currentMask) {
+                this.setMaskImage(currentMask);
+            }
+        }
     }
 
     public moveUser(delta: number, activeUserInputEvents: ActiveEventList): void {
@@ -353,6 +407,9 @@ export class Player extends Character {
 
     destroy(): void {
         this.unsubscribeVisibilityStore();
+        this.unsubscribeAvatarModeStore();
+        this.unsubscribeMaskImageStore();
+        this.unsubscribeLocalStreamStore();
         //this.unsubscribeLayoutManagerActionStore();
         super.destroy();
     }

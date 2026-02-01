@@ -22,6 +22,8 @@ import { ProtobufClientUtils } from "../../Network/ProtobufClientUtils";
 import { SpeakerIcon } from "../Components/SpeakerIcon";
 import { MegaphoneIcon } from "../Components/MegaphoneIcon";
 import { StringUtils } from "../../Utils/StringUtils";
+import type { AvatarMode } from "../../Stores/AvatarModeStore";
+import type { VideoAvatarRenderer } from "./VideoAvatarRenderer";
 
 import { lazyLoadPlayerCharacterTextures } from "./PlayerTexturesLoadingManager";
 import { SpeechBubble } from "./SpeechBubble";
@@ -66,6 +68,12 @@ export abstract class Character extends Container implements OutlineableInterfac
     private outlineColorStoreUnsubscribe: Unsubscriber | undefined;
     private texturePromise: CancelablePromise<string[] | void> | undefined;
     private destroyed = false;
+
+    // Video avatar properties
+    protected videoAvatarRenderer: VideoAvatarRenderer | null = null;
+    protected videoSprite: Sprite | null = null;
+    protected avatarMode: AvatarMode = "mask";
+    protected useVideoAvatar = false;
 
     /**
      * A deferred promise that resolves when the texture of the character is actually displayed.
@@ -125,6 +133,8 @@ export abstract class Character extends Container implements OutlineableInterfac
                 this.addTextures(textures, frame);
                 this.invisible = false;
                 this.playAnimation(direction, moving);
+                // Update visibility after sprites are added (hide if using video avatar)
+                this.updateAvatarVisibility();
                 this.textureLoadedDeferred.resolve();
             })
             .catch(() => {
@@ -142,6 +152,8 @@ export abstract class Character extends Container implements OutlineableInterfac
                         this.addTextures(textures, frame);
                         this.invisible = false;
                         this.playAnimation(direction, moving);
+                        // Update visibility after sprites are added (hide if using video avatar)
+                        this.updateAvatarVisibility();
                         this.textureLoadedDeferred.resolve();
                     })
                     .catch((e) => {
@@ -359,6 +371,10 @@ export abstract class Character extends Container implements OutlineableInterfac
                 throw new CharacterTextureError(`Texture "${texture}" not found`);
             }
             const sprite = new Sprite(this.scene, 0, 0, texture, frame);
+            // Hide sprite immediately if using video avatar mode
+            if (this.useVideoAvatar) {
+                sprite.setVisible(false);
+            }
             this.add(sprite);
             getPlayerAnimations(texture).forEach((d) => {
                 if (!this.scene.anims.exists(d.key)) {
@@ -464,8 +480,113 @@ export abstract class Character extends Container implements OutlineableInterfac
         this.texturePromise?.cancel();
         this.list.forEach((objectContaining) => objectContaining.destroy());
         this.outlineColorStoreUnsubscribe?.();
+
+        // Clean up video avatar
+        if (this.videoSprite) {
+            this.videoSprite.destroy();
+            this.videoSprite = null;
+        }
+        // Note: VideoAvatarRenderer cleanup is managed by VideoAvatarManager
+
         this.destroyed = true;
         super.destroy();
+    }
+
+    /**
+     * Set the video avatar renderer for this character
+     */
+    setVideoAvatarRenderer(renderer: VideoAvatarRenderer): void {
+        this.videoAvatarRenderer = renderer;
+        this.setupVideoSprite();
+    }
+
+    /**
+     * Set up the video sprite using the renderer's texture
+     */
+    private setupVideoSprite(): void {
+        if (!this.videoAvatarRenderer || this.videoSprite) return;
+
+        const textureKey = this.videoAvatarRenderer.getTextureKey();
+
+        // Create sprite using the video texture
+        this.videoSprite = new Sprite(this.scene, 0, 0, textureKey);
+        this.videoSprite.setVisible(this.useVideoAvatar);
+
+        // Add to container at the bottom (behind other elements)
+        this.addAt(this.videoSprite, 0);
+    }
+
+    /**
+     * Set the avatar mode (video or mask)
+     */
+    setAvatarMode(mode: AvatarMode): void {
+        this.avatarMode = mode;
+        this.updateAvatarVisibility();
+    }
+
+    /**
+     * Get the current avatar mode
+     */
+    getAvatarMode(): AvatarMode {
+        return this.avatarMode;
+    }
+
+    /**
+     * Enable video avatar mode
+     */
+    enableVideoAvatar(): void {
+        this.useVideoAvatar = true;
+        this.updateAvatarVisibility();
+    }
+
+    /**
+     * Disable video avatar mode (show Woka sprites or mask)
+     */
+    disableVideoAvatar(): void {
+        this.useVideoAvatar = false;
+        this.updateAvatarVisibility();
+    }
+
+    /**
+     * Update visibility of sprites based on avatar mode
+     * The video sprite is used for both video and mask modes - it renders the appropriate content
+     */
+    protected updateAvatarVisibility(): void {
+        // Use video sprite for both video and mask modes (VideoAvatarRenderer handles both)
+        const useVideoSprite = this.useVideoAvatar;
+
+        // Toggle video sprite visibility
+        if (this.videoSprite) {
+            this.videoSprite.setVisible(useVideoSprite);
+        }
+
+        // Toggle Woka sprites visibility (hide when using video/mask avatar)
+        for (const sprite of this.sprites.values()) {
+            sprite.setVisible(!useVideoSprite);
+        }
+    }
+
+    /**
+     * Set video stream for the avatar
+     */
+    setVideoStream(stream: MediaStream | undefined): void {
+        this.videoAvatarRenderer?.setStream(stream);
+    }
+
+    /**
+     * Set mask image for the avatar
+     */
+    setMaskImage(imageUrl: string | null): void {
+        this.videoAvatarRenderer?.setMaskImage(imageUrl);
+    }
+
+    /**
+     * Check if video avatar is active
+     */
+    isVideoAvatarActive(): boolean {
+        return (
+            this.useVideoAvatar && this.avatarMode === "video" && (this.videoAvatarRenderer?.isVideoActive() ?? false)
+        );
     }
 
     playEmote(emote: string) {

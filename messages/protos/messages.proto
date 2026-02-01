@@ -23,6 +23,11 @@ enum AvailabilityStatus {
   LISTENER = 12;
 }
 
+enum AvatarMode {
+  AVATAR_MODE_VIDEO = 0;
+  AVATAR_MODE_MASK = 1;
+}
+
 message PositionMessage {
   int32 x = 1;
   int32 y = 2;
@@ -113,6 +118,8 @@ message SetPlayerDetailsMessage {
   SetPlayerVariableMessage setVariable = 7;
   google.protobuf.StringValue chatID = 8;
   SayMessage sayMessage = 9;
+  AvatarMode avatarMode = 10;
+  optional string maskImageUrl = 11;
 }
 
 message SayMessage {
@@ -1185,6 +1192,8 @@ message UserJoinedZoneMessage {
   map<string, string> variables = 13;
   optional string chatID = 14;
   SayMessage sayMessage = 15;
+  AvatarMode avatarMode = 16;
+  optional string maskImageUrl = 17;
 }
 
 message UserLeftZoneMessage {
@@ -1467,6 +1476,8 @@ message SpaceUser{
   google.protobuf.StringValue chatID = 17; // used
   bool showVoiceIndicator = 18;
   bool attendeesState = 19;
+  AvatarMode avatarMode = 20;
+  optional string maskImageUrl = 21;
 }
 
 /*message PartialSpaceUser{

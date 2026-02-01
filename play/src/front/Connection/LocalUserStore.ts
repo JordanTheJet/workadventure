@@ -53,6 +53,8 @@ const mapEditorSideBarWidthKey = "mapEditorSideBarWidthKey";
 const bubbleSound = "bubbleSound";
 const videoQualityKey = "videoQuality";
 const screenShareQualityKey = "screenShareQuality";
+const avatarModeKey = "avatarMode";
+const maskImageKey = "maskImage";
 const bandwidthConstrainedScreenSharePreferenceKey = "bandwidthConstrainedScreenSharePreference";
 const legacyVideoBandwidthKey = "videoBandwidth";
 const legacyScreenShareBandwidthKey = "screenShareBandwidth";
@@ -816,6 +818,30 @@ class LocalUserStore {
             return "wobble";
         }
         return "ding";
+    }
+
+    setAvatarMode(mode: "video" | "mask"): void {
+        localStorage.setItem(avatarModeKey, mode);
+    }
+
+    getAvatarMode(): "video" | "mask" {
+        const value = localStorage.getItem(avatarModeKey);
+        if (value === "video" || value === "mask") {
+            return value;
+        }
+        return "mask"; // Default to mask mode
+    }
+
+    setMaskImage(dataUrl: string | null): void {
+        if (dataUrl) {
+            localStorage.setItem(maskImageKey, dataUrl);
+        } else {
+            localStorage.removeItem(maskImageKey);
+        }
+    }
+
+    getMaskImage(): string | null {
+        return localStorage.getItem(maskImageKey);
     }
 }
 

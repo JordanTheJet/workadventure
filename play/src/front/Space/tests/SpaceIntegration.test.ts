@@ -304,6 +304,8 @@ describe("", () => {
             chatID: undefined,
             showVoiceIndicator: false,
             attendeesState: false,
+            avatarMode: 1,
+            maskImageUrl: undefined,
         } satisfies SpaceUser;
 
         const addSpaceUserMessage: AddSpaceUserMessage = {
@@ -360,6 +362,8 @@ describe("", () => {
             chatID: "chat@id.fr",
             showVoiceIndicator: false,
             attendeesState: false,
+            avatarMode: 1,
+            maskImageUrl: undefined,
         } satisfies SpaceUser;
 
         const addSpaceUserMessage: AddSpaceUserMessage = {
@@ -411,6 +415,8 @@ describe("", () => {
             chatID: "chat@id.fr",
             showVoiceIndicator: false,
             attendeesState: false,
+            avatarMode: 1,
+            maskImageUrl: undefined,
         } satisfies SpaceUser;
 
         const addSpaceUserMessage: AddSpaceUserMessage = {
@@ -556,6 +562,8 @@ describe("", () => {
                 tags: [],
                 jitsiParticipantId: undefined,
                 attendeesState: false,
+                avatarMode: 0,
+                maskImageUrl: undefined,
             },
             $case: "muteVideo",
             muteVideo: {

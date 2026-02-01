@@ -194,6 +194,16 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "No se puede llegar a su escritorio personal",
         errorUnclaiming: "No se puede liberar su escritorio personal",
     },
+    avatarMode: {
+        switchToMask: "Cambiar a máscara",
+        enableCamera: "Activar avatar de cámara",
+        videoDescription: "Mostrar tu feed de webcam como avatar",
+        maskDescription: "Mostrar una imagen de máscara estática como avatar",
+        selectMask: "Seleccionar máscara",
+        uploadCustomMask: "Subir máscara personalizada",
+        presetMasks: "Máscaras predefinidas",
+        customMask: "Máscara personalizada",
+    },
 };
 
 export default actionbar;

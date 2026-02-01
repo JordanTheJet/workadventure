@@ -194,6 +194,16 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "Wósobinske pisanje blidko njejo se docyło",
         errorUnclaiming: "Wósobinske pisanje blidko njejo se wótpórało",
     },
+    avatarMode: {
+        switchToMask: "K masce pśešaltowaś",
+        enableCamera: "Kamerowu awataru aktiwěrowaś",
+        videoDescription: "Waš webcam-stream ako awatar pokazaś",
+        maskDescription: "Statiski maskowy wobraz ako awatar pokazaś",
+        selectMask: "Masku wubraś",
+        uploadCustomMask: "Swójsku masku nagraś",
+        presetMasks: "Pśeddefiněrowane maski",
+        customMask: "Swójska maska",
+    },
 };
 
 export default actionbar;

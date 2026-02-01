@@ -194,5 +194,15 @@ const actionbar: BaseTranslation = {
         errorMoving: "Unable to reach your personal desk",
         errorUnclaiming: "Unable to unclaim your personal desk",
     },
+    avatarMode: {
+        switchToMask: "Switch to Mask",
+        enableCamera: "Enable Camera Avatar",
+        videoDescription: "Show your webcam feed as your avatar",
+        maskDescription: "Show a static mask image as your avatar",
+        selectMask: "Select Mask",
+        uploadCustomMask: "Upload Custom Mask",
+        presetMasks: "Preset Masks",
+        customMask: "Custom Mask",
+    },
 };
 export default actionbar;

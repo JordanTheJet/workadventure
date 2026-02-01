@@ -194,6 +194,16 @@ const actionbar: DeepPartial<Translation["actionbar"]> = {
         errorMoving: "No es pot arribar al vostre escriptori personal",
         errorUnclaiming: "No es pot alliberar el vostre escriptori personal",
     },
+    avatarMode: {
+        switchToMask: "Canviar a màscara",
+        enableCamera: "Activar avatar de càmera",
+        videoDescription: "Mostrar el teu feed de webcam com a avatar",
+        maskDescription: "Mostrar una imatge de màscara estàtica com a avatar",
+        selectMask: "Seleccionar màscara",
+        uploadCustomMask: "Pujar màscara personalitzada",
+        presetMasks: "Màscares predefinides",
+        customMask: "Màscara personalitzada",
+    },
 };
 
 export default actionbar;
